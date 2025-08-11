@@ -36,7 +36,7 @@ The ALX Travel App is a Django-based backend for a travel listing platform, desi
     - [Running Tests](#running-tests)
     - [Test Coverage](#test-coverage)
   - [Project Structure](#project-structure)
-  - [License](#license)
+  - [🏁 License](#-license)
 
 ## Prerequisites
 
@@ -225,6 +225,8 @@ alx_travel_app/
     └── views.py         # API views
 ```
 
-## License
+## 🏁 License
 
-This project is for educational purpose within the ALX ProDEV program.
+MIT License  
+Open-source for educational use.  
+© 2025 ALX, All rights reserved.

@@ -1,52 +1,97 @@
 # listings/views.py
 
-from rest_framework import viewsets, permissions
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from .models import Listing, Booking
-from .serializers import ListingSerializer, BookingSerializer
+
+from .models import Booking, Listing, Review
+from .serializers import BookingSerializer, ListingSerializer, ReviewSerializer
+
 
 class ListingViewSet(viewsets.ModelViewSet):
     """
-    A ViewSet for viewing, editing, and managing Listings.
-    Provides CRUD operations.
+    API endpoint that allows listings to be viewed or edited.
     """
-    queryset = Listing.objects.all().order_by('-created_at')
+
+    queryset = Listing.objects.all().order_by("-created_at")
     serializer_class = ListingSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = "id"
 
     def get_queryset(self):
-        # Allow filtering by location
-        queryset = Listing.objects.all().order_by('-created_at')
-        location = self.request.query_params.get('location', None)
-        if location:
-            queryset = queryset.filter(location__icontains=location)
-        return queryset.prefetch_related('amenities').annotate(
-            average_rating=models.Avg('reviews__rating'),
-            reviews_count=models.Count('reviews')
-        )
+        """
+        Optionally filter listings by various parameters.
+        """
+        queryset = super().get_queryset()
+        # Example of filtering by query parameters
+        max_price = self.request.query_params.get("max_price")
+        if max_price is not None:
+            queryset = queryset.filter(price_per_night__lte=max_price)
+        return queryset
 
-    @action(detail=True, methods=['get'], url_path='bookings')
-    def bookings(self, request, pk=None):
-        """Get all bookings for a specific listing"""
+    @action(detail=True, methods=["get"])
+    def reviews(self, request, id=None):
+        """
+        Retrieve all reviews for a specific listing.
+        """
         listing = self.get_object()
-        bookings = listing.bookings.all()
-        serializer = BookingSerializer(bookings, many=True)
+        reviews = Review.objects.filter(listing=listing)
+        serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
 
 
 class BookingViewSet(viewsets.ModelViewSet):
     """
-    A ViewSet for viewing and managing Bookings.
-    Users can only manage their own bookings.
+    API endpoint that allows bookings to be viewed or edited.
     """
+
     serializer_class = BookingSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "id"
 
     def get_queryset(self):
-        user = self.request.user
-        return Booking.objects.filter(guest=user).order_by('-created_at')
+        """
+        Optionally filter bookings by listing_id or user.
+        """
+        queryset = Booking.objects.all().order_by("-created_at")
+        listing_id = self.request.GET.get("listing_id")
+        user_id = self.request.GET.get("user_id")
+
+        if listing_id:
+            queryset = queryset.filter(listing_id=listing_id)
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+
+        return queryset
 
     def perform_create(self, serializer):
-        serializer.save(guest=self.request.user)
+        """
+        Automatically set the user to the current user when creating a booking.
+        """
+        serializer.save(user=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Override destroy to prevent deletion of confirmed bookings.
+        """
+        instance = self.get_object()
+        if instance.status == "confirmed":
+            return Response(
+                {"detail": "Cannot delete a confirmed booking."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return super().destroy(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Handle PATCH requests for updating a booking.
+        """
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        # Save the updated instance
+        self.perform_update(serializer)
+
+        # Refresh the instance from the database to get the updated status
+        instance.refresh_from_db()
+
+        return Response(serializer.data)
