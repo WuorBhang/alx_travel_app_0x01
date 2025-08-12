@@ -1,6 +1,6 @@
 # ALX Travel App Backend
 
-The ALX Travel App is a Django-based backend for a travel listing platform, designed with industry best practices for scalability, maintainability, and team collaboration.
+The ALX Travel App is a Django-based backend for a travel App.
 
 ## Features
 
@@ -36,12 +36,12 @@ The ALX Travel App is a Django-based backend for a travel listing platform, desi
     - [Running Tests](#running-tests)
     - [Test Coverage](#test-coverage)
   - [Project Structure](#project-structure)
-  - [License](#license)
+  - [🏁 License](#-license)
 
 ## Prerequisites
 
-- Python 3.12+
-- MySQL 8.0+
+- Python
+- MySQL
 - Celery (for async tasks, future development)
 - Git
 
@@ -53,6 +53,7 @@ The ALX Travel App is a Django-based backend for a travel listing platform, desi
    git clone https://github.com/your-username/alx_travel_app.git
    cd alx_travel_app
    ```
+
 2. **Set up virtual environment**
 
    ```bash
@@ -62,6 +63,7 @@ The ALX Travel App is a Django-based backend for a travel listing platform, desi
    # Unix/macOS
    source venv/bin/activate
    ```
+
 3. **Install dependencies**
 
    ```bash
@@ -89,14 +91,16 @@ The ALX Travel App is a Django-based backend for a travel listing platform, desi
    # Celery (for async tasks)
    CELERY_BROKER_URL=amqp://guest:guest@localhost:5672//
    ```
+
 2. **Database Setup**
 
    ```sql
    CREATE DATABASE alx_travel_db;
-   CREATE USER 'alx_user'@'localhost' IDENTIFIED BY 'your_secure_password';
-   GRANT ALL PRIVILEGES ON alx_travel_db.* TO 'alx_user'@'localhost';
+   CREATE USER 'localhost' IDENTIFIED BY 'your_secure_password';
+   GRANT ALL PRIVILEGES ON alx_travel_db.* TO 'localhost';
    FLUSH PRIVILEGES;
    ```
+
 3. **Run Migrations**
 
    ```bash
@@ -150,10 +154,10 @@ POST /api/v1/listings/
 Content-Type: application/json
 
 {
-   "title": "Beachfront Villa",
-   "description": "Luxury villa with ocean view",
-   "price_per_night": "250.00",
-   "max_guests": 6
+   "title": "Manyatta House",
+   "description": "Traditional House",
+   "price_per_night": "150.00",
+   "max_guests": 2
 }
 ```
 
@@ -165,15 +169,15 @@ Content-Type: application/json
 
 {
    "listing": 1,
-   "start_date": "2025-08-15",
-   "end_date": "2025-08-22"
+   "start_date": "2025-07-20",
+   "end_date": "2025-07-25"
 }
 ```
 
 #### Filter Listings
 
 ```http
-GET /api/v1/listings/?max_price=300
+GET /api/v1/listings/?max_price=150
 ```
 
 ## Testing
@@ -225,6 +229,8 @@ alx_travel_app/
     └── views.py         # API views
 ```
 
-## License
+## 🏁 License
 
-This project is for educational purpose within the ALX ProDEV program.
+MIT License  
+Open-source for educational use.  
+© 2025 ALX, All rights reserved.

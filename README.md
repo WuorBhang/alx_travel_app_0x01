@@ -53,6 +53,7 @@ The ALX Travel App is a Django-based backend for a travel App.
    git clone https://github.com/your-username/alx_travel_app.git
    cd alx_travel_app
    ```
+
 2. **Set up virtual environment**
 
    ```bash
@@ -62,6 +63,7 @@ The ALX Travel App is a Django-based backend for a travel App.
    # Unix/macOS
    source venv/bin/activate
    ```
+
 3. **Install dependencies**
 
    ```bash
@@ -89,6 +91,7 @@ The ALX Travel App is a Django-based backend for a travel App.
    # Celery (for async tasks)
    CELERY_BROKER_URL=amqp://guest:guest@localhost:5672//
    ```
+
 2. **Database Setup**
 
    ```sql
@@ -97,6 +100,7 @@ The ALX Travel App is a Django-based backend for a travel App.
    GRANT ALL PRIVILEGES ON alx_travel_db.* TO 'localhost';
    FLUSH PRIVILEGES;
    ```
+
 3. **Run Migrations**
 
    ```bash
